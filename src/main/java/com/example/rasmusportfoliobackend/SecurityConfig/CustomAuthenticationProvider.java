@@ -1,6 +1,7 @@
 package com.example.rasmusportfoliobackend.SecurityConfig;
 
 import com.example.rasmusportfoliobackend.entity.User;
+import com.example.rasmusportfoliobackend.service.UserService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -18,7 +19,7 @@ import java.util.Optional;
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
-    UsersServiceImpl usersService;
+    UserService usersService;
 
     private User user;
 
@@ -38,15 +39,15 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             user = optionalUser.get();
 
             if (user.getEmail().equals(username) && user.getPassword().equals(password)) {
-                usersService.setUsers(user);
+                usersService.setUser(user);
 
                 ArrayList<SimpleGrantedAuthority> roles = new ArrayList<>();
-                roles.add(new SimpleGrantedAuthority(String.valueOf(user.getIsAdmin())));
+                roles.add(new SimpleGrantedAuthority(String.valueOf(user.isAdmin())));
 
                 return new UsernamePasswordAuthenticationToken
                         (username, password, roles);
             } else {
-                usersService.setUsers(null);
+                usersService.setUser(null);
                 throw new
                         BadCredentialsException("Authentication failed");
             }
